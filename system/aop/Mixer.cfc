@@ -228,6 +228,8 @@ Description :
 		<cfargument name="jointPointMD"	type="any" required="true" hint="The jointpoint metadata to proxy"/>
 		<cfargument name="aspects" 		type="any" required="true" hint="The aspects to weave into the jointpoint"/>
     	<cfscript>
+    		var fileKey = hash(serialize(arguments.jointPointMD));
+		lock name=fileKey type='exclusive' timeout=30 throwOnTimeout=true {
 			var udfOut 			= createObject("java","java.lang.StringBuffer").init('');
 			var tmpFile 		= instance.properties.generationPath & "/" & instance.uuid.randomUUID().toString() & ".cfm";
 			var expandedFile 	= expandPath( tmpFile );
@@ -291,7 +293,8 @@ Description :
 				}
 				// throw the exception
 				instance.mixerUtil.throwIt("Exception mixing in AOP aspect for (#mappingName#)",e.message & e.detail & e.stacktrace,"WireBox.aop.Mixer.MixinException");
-			}		
+			}
+		}
     	</cfscript>    
     </cffunction>
     
